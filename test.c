@@ -10,7 +10,7 @@ mprotectNotInTheRangeTest(){
 }
 
 void
-mprotectNotInTheRangeTest(){
+munprotectNotInTheRangeTest(){
   int returnValue = munprotect((void *)4096, 5);
-  printf(1, "The return value of mprotect is: %d\n\n", returnValue);
+  printf(1, "The return value of munprotect is: %d\n\n", returnValue);
 }
