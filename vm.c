@@ -399,11 +399,9 @@ mprotect(void *addr, int len)
   struct proc *proc = myproc();
 
   //Check whether len is less than or equal to zero
-  if(len <= 0){
-    if(len * PGSIZE +(int)addr > proc->vlimit){
-      cprintf("Error in Length \n");
-      return -1;
-    }
+  if(len <= 0 || len * PGSIZE +(int)addr > proc->vlimit  ){
+    cprintf("Error in Length \n");
+    return -1;
   }
 
   //Check whether addr is not page aligned
@@ -440,11 +438,9 @@ munprotect(void *addr, int len)
 
 
   //Check whether len is less than or equal to zero
-  if(len <= 0){
-    if(len * PGSIZE +(int)addr > proc->vlimit){
-      cprintf("Error in Length \n");
-      return -1;
-    }
+  if(len <= 0 || len * PGSIZE +(int)addr > proc->vlimit  ){
+    cprintf("Error in Length \n");
+    return -1;
   }
 
   //Check whether addr is not page aligned

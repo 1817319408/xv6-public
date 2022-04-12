@@ -3,26 +3,14 @@
 #include "user.h"
 #include "mmu.h"
 
-int
-main(int argc, char *argv[])
-{
-  char * addr = sbrk(0);
-  sbrk(PGSIZE);
-  *addr = 100;
-  mprotect(addr, 1) ;
-  int y = fork();
-  if(y == 0){
-    printf(1, "Protect: %d \n", *addr);
-    munprotect(addr, 1);
-    *addr = 5;
-    printf(1, "Unprotect: %d \n", *addr);
-    exit();
-  }
-  else if(y > 0){
-    wait();
-    printf(1, "trap \n");
-    *addr = 5;
-    exit();
-  }
- exit();
+void
+mprotectNotInTheRangeTest(){
+  int returnValue = mprotect((void *)4096, 5);
+  printf(1, "The return value of mprotect is: %d\n\n", returnValue);
+}
+
+void
+mprotectNotInTheRangeTest(){
+  int returnValue = munprotect((void *)4096, 5);
+  printf(1, "The return value of mprotect is: %d\n\n", returnValue);
 }
