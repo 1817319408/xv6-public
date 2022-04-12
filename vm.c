@@ -392,10 +392,88 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
   return 0;
 }
 
-//PAGEBREAK!
-// Blank page.
-//PAGEBREAK!
-// Blank page.
-//PAGEBREAK!
-// Blank page.
+int
+mprotect(void *addr, int len)
+{
+  pte_t *pte;
+  struct proc *proc = myproc();
 
+  //Check whether len is less than or equal to zero
+  if(len <= 0){
+    if(len * PGSIZE +(int)addr > proc->vlimit){
+      cprintf("Error in Length \n");
+      return -1;
+    }
+  }
+
+  //Check whether addr is not page aligned
+  if((int)(((int) addr) % PGSIZE ) != 0){
+    cprintf("Error in Address: %p \n", addr);
+    return -1;
+  }
+  for (int i = (int) addr; i < ((len) * PGSIZE+(int) addr); i += PGSIZE){
+    pte = walkpgdir(proc->pgdir,(void*) i, 0);
+
+    //Check whether addr points to a region that is not currently a part of the address space
+    if(((*pte & PTE_P) != 0) && ((*pte & PTE_U) && pte))
+    {
+      //Change it to ReadOnly
+      *pte &= ~PTE_W;
+      cprintf("Page Table Entry = %p\n", pte);
+    }
+    else {
+      return -1;
+    }
+
+  }
+  // update page flag
+  lcr3(V2P(proc->pgdir));
+
+  return 0;
+}
+
+int
+munprotect(void *addr, int len)
+{
+  pte_t *pte;
+  struct proc *proc = myproc();
+
+
+  //Check whether len is less than or equal to zero
+  if(len <= 0){
+    if(len * PGSIZE +(int)addr > proc->vlimit){
+      cprintf("Error in Length \n");
+      return -1;
+    }
+  }
+
+  //Check whether addr is not page aligned
+  if((int)(((int) addr) % PGSIZE ) != 0){
+    cprintf("Error in Address: %p \n", addr);
+    return -1;
+  }
+
+  for (int i = (int) addr; i < ((len) * PGSIZE+(int) addr); i += PGSIZE){
+    pte = walkpgdir(proc->pgdir,(void*) i, 0);
+    //Check whether addr points to a region that is not currently a part of the address space
+    if(((*pte & PTE_P) != 0) && ((*pte & PTE_U) && pte))
+    {
+      //Reverse it to readable and writeable
+      *pte |= PTE_W;
+      cprintf("Page Table Entry = %p \n", pte);}
+    else{
+      return -1;
+    }
+  }
+  // update page flag
+  lcr3(V2P(proc->pgdir));
+
+  return 0;
+}
+
+//PAGEBREAK!
+// Blank page.
+//PAGEBREAK!
+// Blank page.
+//PAGEBREAK!
+// Blank page.
